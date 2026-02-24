@@ -1,0 +1,9 @@
+# #364 - Add better assertions to copy() for detecting memory buffer overflows [Open]
+
+> Username: kylelutz  
+> Created at: 2014-12-29 18:24:21 UTC  
+> Updated at: 2017-03-21 04:14:52 UTC  
+> Url: https://github.com/boostorg/compute/issues/364  
+
+Add assertions to the `copy()` algorithm to automatically check (where possible) for incorrectly sized output buffers.  
+##
