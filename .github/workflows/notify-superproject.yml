@@ -1,0 +1,42 @@
+name: Notify Super-Project
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+concurrency:
+  group: notify-superproject
+  cancel-in-progress: true
+
+env:
+  SUBMODULE_NAME: ${{ github.event.repository.name }}
+  SUPERPROJECT_REPO: ${{ github.repository_owner }}/wg21-private-context
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notify super-project of update
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          repository: ${{ env.SUPERPROJECT_REPO }}
+          token: ${{ secrets.SUPERPROJECT_DISPATCH_TOKEN }}
+          event-type: submodule-updated
+          client-payload: |
+            {
+              "submodule": "${{ env.SUBMODULE_NAME }}",
+              "ref": "${{ github.ref }}",
+              "sha": "${{ github.sha }}",
+              "repository": "${{ github.repository }}",
+              "pusher": "${{ github.actor }}",
+              "timestamp": "${{ github.event.head_commit.timestamp }}"
+            }
+      
+      - name: Report success
+        if: success()
+        run: |
+          echo "✅ Successfully notified super-project of update"
+          echo "Submodule: ${{ env.SUBMODULE_NAME }}"
+          echo "Commit: ${{ github.sha }}"
